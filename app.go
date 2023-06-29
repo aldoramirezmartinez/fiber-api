@@ -61,7 +61,7 @@ func (app *App) Run() {
 	port := config.GetPort()
 	fmt.Println("Server listening on port:", port)
 
-	err := app.fiberApp.Listen(":" + port)
+	err := app.fiberApp.Listen("0.0.0.0:" + port)
 	if err != nil {
 		fmt.Println("Failed to start server:", err)
 	}
