@@ -10,12 +10,11 @@ import (
 )
 
 type App struct {
-	fiberApp                 *fiber.App
-	UserController           *controllers.UserController
-	ProviderController       *controllers.ProviderController
-	PurchaseController       *controllers.PurchaseController
-	ItemController           *controllers.ItemController
-	PurchaseDetailController *controllers.PurchaseDetailController
+	fiberApp             *fiber.App
+	UserController       *controllers.UserController
+	ProviderController   *controllers.ProviderController
+	ItemController       *controllers.ItemController
+	PurchaseV2Controller *controllers.PurchaseV2Controller
 }
 
 func NewApp() *App {
@@ -26,19 +25,18 @@ func NewApp() *App {
 
 	userController := controllers.NewUserController(db)
 	providerController := controllers.NewProviderController(db)
-	purchaseController := controllers.NewPurchaseController(db)
 	itemController := controllers.NewItemController(db)
-	purchaseDetailController := controllers.NewPurchaseDetailController(db)
+
+	purchasev2Controller := controllers.NewPurchaseV2Controller(db)
 
 	fiberApp := fiber.New()
 
 	return &App{
-		fiberApp:                 fiberApp,
-		UserController:           userController,
-		ProviderController:       providerController,
-		PurchaseController:       purchaseController,
-		ItemController:           itemController,
-		PurchaseDetailController: purchaseDetailController,
+		fiberApp:             fiberApp,
+		UserController:       userController,
+		ProviderController:   providerController,
+		ItemController:       itemController,
+		PurchaseV2Controller: purchasev2Controller,
 	}
 }
 
@@ -49,19 +47,16 @@ func (app *App) Run() {
 	providerRoutes := routes.NewProviderRoutes(app.fiberApp, app.ProviderController)
 	providerRoutes.SetupRoutes()
 
-	purchaseRoutes := routes.NewPurchaseRoutes(app.fiberApp, app.PurchaseController)
-	purchaseRoutes.SetupRoutes()
-
 	itemRoutes := routes.NewItemRoutes(app.fiberApp, app.ItemController)
 	itemRoutes.SetupRoutes()
 
-	purchaseDetailRoutes := routes.NewPurchaseDetailRoutes(app.fiberApp, app.PurchaseDetailController)
-	purchaseDetailRoutes.SetupRoutes()
+	purchasev2Routes := routes.NewPurchaseV2Routes(app.fiberApp, app.PurchaseV2Controller)
+	purchasev2Routes.SetupRoutes()
 
 	port := config.GetPort()
 	fmt.Println("Server listening on port:", port)
 
-	err := app.fiberApp.Listen("0.0.0.0:" + port)
+	err := app.fiberApp.Listen(":" + port)
 	if err != nil {
 		fmt.Println("Failed to start server:", err)
 	}
